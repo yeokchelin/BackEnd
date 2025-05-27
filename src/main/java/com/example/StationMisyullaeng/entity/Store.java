@@ -2,6 +2,7 @@ package com.example.StationMisyullaeng.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "store")
@@ -12,9 +13,7 @@ import lombok.*;
 @Builder
 public class Store {
 
-    //변경사항
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "store_id")
     private Long storeId;
 
@@ -31,10 +30,10 @@ public class Store {
     private String phone;       //가게 전화번호
 
     @Column(name = "open", length = 10)
-    private String open;        //오픈시간
+    private LocalTime open;        //오픈시간
 
     @Column(name = "close", length = 10)
-    private String close;       //마감시간
+    private LocalTime close;       //마감시간
 
     @Column(name = "rating")
     private Float rating;       //별점
