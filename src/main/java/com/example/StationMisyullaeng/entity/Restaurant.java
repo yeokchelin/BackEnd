@@ -1,4 +1,4 @@
-package com.example.StationMisyullaeng.domain.entity;
+package com.example.StationMisyullaeng.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
