@@ -3,6 +3,9 @@ package com.example.StationMisyullaeng.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "review")
 @Getter
@@ -29,6 +32,4 @@ public class Review {
     @Column(name = "rate", nullable = false)
     private Integer rate;   // 별점 (0~5)
 
-    @Column(name = "image_path")
-    private String imagePath;  // 로컬 이미지 경로
 }
