@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "MateFoodPost")
+@Table(name = "BoardMateFood")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -15,7 +15,7 @@ public class MateFoodPost {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_id")
-    private Long id;
+    private String id;
 
     @Column(nullable = false, length = 50)
     private String writer;
@@ -24,16 +24,16 @@ public class MateFoodPost {
     private String title;
 
     @Column(nullable = false, columnDefinition = "TEXT")
-    private String content;
+    private String content; // 내용
 
     @Column(name = "meeting_station", length = 50)
-    private String meetingStation;
+    private String meetingStation; // 만날 역
 
     @Column(name = "meeting_time", length = 10)
     private String meetingTime;  // 예: "18:30" (문자열로 받음)
 
     @Column(name = "recruit_count")
-    private Integer recruitCount;
+    private String recruitCount; // 같이먹을사람 구하는 인원
 
     @Column(name = "preferred_gender", length = 10)
     private String preferredGender;  // 예: "무관", "여성", "남성"
