@@ -15,10 +15,10 @@ TODO : Restaurant 엔티티와 연결된 테이블에 대한 CRUD(조회, 저장
 
 @Repository
 public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
-
     // 특정 지하철역 이름으로 맛집 목록 조회
     List<Restaurant> findByStationName(String stationName);
 
     // 평점 높은 순으로 Top 10 맛집 조회
     List<Restaurant> findTop10ByOrderByRatingDesc();
+
 }
