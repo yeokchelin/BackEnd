@@ -7,13 +7,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-
 /*
 TODO : 메인페이지 관련 내용
 TODO : 외부 요청을 받는 진입 지점이야 (API 요청을 처리)
 TODO : 프론트엔드(React)에서 /api/restaurants 등으로 HTTP 요청을 보내면, 그걸 받아서 Service에 전달하고 결과를 응답해 줘
 */
-
 
 @RestController
 @RequiredArgsConstructor
