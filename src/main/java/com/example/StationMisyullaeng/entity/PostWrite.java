@@ -16,7 +16,7 @@ public class PostWrite {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_id")
-    private Long id;
+    private String id;
 
     @Column(nullable = false, length = 50)
     private String writer;
