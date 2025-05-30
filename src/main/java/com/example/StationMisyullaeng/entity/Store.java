@@ -33,4 +33,10 @@ public class Store {
 
     @Column(name = "description")
     private String description; //가게 소개
+    
+    @OneToMany(mappedBy = "store",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<Menu> menus = new ArrayList<>();   //Menu 테이블과 양방향 연관관계 설정
+    
 }
