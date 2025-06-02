@@ -1,7 +1,11 @@
 package com.example.StationMisyullaeng.entity;
 
+import com.example.StationMisyullaeng.controller.MateFoodPostController;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "boardmatefood")
@@ -15,7 +19,7 @@ public class MateFoodPost {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_id")
-    private String id;
+    private Long id;
 
     @Column(nullable = false, length = 50)
     private String writer;
@@ -37,4 +41,9 @@ public class MateFoodPost {
 
     @Column(name = "preferred_gender", length = 10)
     private String preferredGender;  // 예: "무관", "여성", "남성"
+
+    @OneToMany(mappedBy = "mateFoodPost", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<MateFoodPostComment> comments;
+
 }
