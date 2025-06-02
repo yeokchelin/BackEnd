@@ -1,17 +1,17 @@
+// src/main/java/com/example/StationMisyullaeng/entity/MateFoodPost.java
 package com.example.StationMisyullaeng.entity;
 
-import com.example.StationMisyullaeng.controller.MateFoodPostController;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.List;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "boardmatefood")
+@Table(name = "board_mate_food") // 테이블명
 @Getter
 @Setter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 public class MateFoodPost {
@@ -27,23 +27,29 @@ public class MateFoodPost {
     @Column(nullable = false, length = 100)
     private String title;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String content; // 내용
+    @Column(nullable = false, columnDefinition = "TEXT") // ❗️ content는 null을 허용하지 않음
+    private String content;
 
-    @Column(name = "meeting_station", length = 50)
-    private String meetingStation; // 만날 역
+    @Column(name = "meeting_station", length = 50, nullable = false) // ❗️ 만날 역도 필수로 가정
+    private String meetingStation;
 
-    @Column(name = "meeting_time", length = 10)
-    private String meetingTime;  // 예: "18:30" (문자열로 받음)
+    @Column(name = "meeting_time", length = 50, nullable = false) // ❗️ 만날 시간도 필수로 가정
+    private String meetingTime;
 
-    @Column(name = "recruit_count")
-    private String recruitCount; // 같이먹을사람 구하는 인원
+    @Column(name = "recruit_count", nullable = false) // ❗️ 모집 인원도 필수로 가정
+    private Integer recruitCount;
 
-    @Column(name = "preferred_gender", length = 10)
-    private String preferredGender;  // 예: "무관", "여성", "남성"
+    @Column(name = "preferred_gender", length = 10, nullable = false) // ❗️ 선호 성별도 필수로 가정
+    private String preferredGender;
 
-    @OneToMany(mappedBy = "mateFoodPost", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private List<MateFoodPostComment> comments;
+    @Column(length = 20, nullable = false)
+    private String status;
 
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
 }
