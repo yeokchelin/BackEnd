@@ -21,21 +21,21 @@ public class StoreController {
         return storeService.getAllStore();
     }
 
-    //이름으로 가게 조회
+    //상호명으로 가게 조회
     @GetMapping("name/{name}")
     public List<Store> getStoreByName(@PathVariable String name){
         return storeService.getStoreByName(name);
     }
 
-    //카테고리로 가게 조회(ex: 이자카야, 포장마차, 요리주점 등등)
-    @GetMapping("category/{category}")
-    public List<Store> getStoreByCategory(@PathVariable String category) {
-        return storeService.getStoreByCategory(category);
-    }
 
     @PostMapping    //가게 등록
     public Store createStore(@RequestBody Store store) {
         return storeService.createStore(store);
+    }
+
+    @PatchMapping("/{storeId}")
+    public Store updateStore(@PathVariable Long storeId, @RequestBody Store store) {
+        return storeService.updateStore(storeId, store);
     }
 
 
