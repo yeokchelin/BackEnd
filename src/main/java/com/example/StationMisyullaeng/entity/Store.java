@@ -38,5 +38,7 @@ public class Store {
             cascade = CascadeType.ALL,
             orphanRemoval = true)
     private List<Menu> menus = new ArrayList<>();   //Menu 테이블과 양방향 연관관계 설정
-    
+
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Favorite> favorites = new ArrayList<>();
 }

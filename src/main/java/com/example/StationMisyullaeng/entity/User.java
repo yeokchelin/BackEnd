@@ -1,7 +1,11 @@
 package com.example.StationMisyullaeng.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "user")
@@ -47,4 +51,6 @@ public class User {
     @Column(name = "phone_number")
     private String phoneNumber;     //카카오계정(전화번호)
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Favorite> favorites = new ArrayList<>();
 }
