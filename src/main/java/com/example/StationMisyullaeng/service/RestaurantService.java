@@ -1,5 +1,6 @@
 package com.example.StationMisyullaeng.service;
 
+import com.example.StationMisyullaeng.entity.Category;
 import com.example.StationMisyullaeng.entity.Restaurant;
 import com.example.StationMisyullaeng.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +40,18 @@ public class RestaurantService {
     public List<Restaurant> getTopRatedRestaurants() {
         return restaurantRepository.findTop10ByOrderByRatingDesc();
     }
+
+    // 카테고리별로 맛집 리스트 반환하기
+    public List<Restaurant> getRestaurantsByCategory(Category category) {
+        return restaurantRepository.findByCategory(category);
+    }
+
+    //지하철역 이름과 카테고리 별로 맛집 리스트 반환하기
+    public List<Restaurant> getRestaurantsByStationAndCategory(String stationName, Category category){
+        return restaurantRepository.findByStationNameAndCategory(stationName, category);
+    }
+
+
 }
 
 

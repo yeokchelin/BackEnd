@@ -20,7 +20,8 @@ public class Restaurant {
 
     private String stationName;       // 지하철역 이름
 
-    private String category;          // 음식 카테고리
+    @Enumerated(EnumType.STRING)      // 문자열로 DB에 저장
+    private Category category;        // 음식 카테고리
 
     private Double rating;            // 평점 (예: 4.5)
 

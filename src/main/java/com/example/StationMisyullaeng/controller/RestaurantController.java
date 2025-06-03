@@ -1,5 +1,6 @@
 package com.example.StationMisyullaeng.controller;
 
+import com.example.StationMisyullaeng.entity.Category;
 import com.example.StationMisyullaeng.entity.Restaurant;
 import com.example.StationMisyullaeng.service.RestaurantService;
 import lombok.RequiredArgsConstructor;
@@ -43,4 +44,17 @@ public class RestaurantController {
     public List<Restaurant> getTopRated() {
         return restaurantService.getTopRatedRestaurants();
     }
+
+    // 카테고리별 맛집 조회
+    @GetMapping("/category/{category}")
+    public List<Restaurant> getByCategory(@PathVariable Category category) {
+        return restaurantService.getRestaurantsByCategory(category);
+    }
+
+    //지하철역과 카테고리로 맛집 리스트 조회
+    @GetMapping("/filter")
+    public List<Restaurant> getByFilter(@RequestParam String stationName,@RequestParam Category category) {
+        return restaurantService.getRestaurantsByStationAndCategory(stationName, category);
+    }
+
 }
