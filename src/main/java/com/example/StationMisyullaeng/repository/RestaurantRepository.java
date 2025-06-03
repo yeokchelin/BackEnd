@@ -1,5 +1,6 @@
 package com.example.StationMisyullaeng.repository;
 
+import com.example.StationMisyullaeng.entity.Category;
 import com.example.StationMisyullaeng.entity.Restaurant;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -20,5 +21,11 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
 
     // 평점 높은 순으로 Top 10 맛집 조회
     List<Restaurant> findTop10ByOrderByRatingDesc();
+
+    // 카테고리 별 맛집 조회
+    List<Restaurant> findByCategory(Category category);
+
+    //지하철역 이름과 카테고리 별로 맛집 리스트 반환하기
+    List<Restaurant> findByStationNameAndCategory(String stationName, Category category);
 
 }
