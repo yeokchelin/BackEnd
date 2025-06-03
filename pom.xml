@@ -5,13 +5,13 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.4.6</version>
+		<version>3.4.5</version> <!-- springboot version -->
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.example</groupId>
-	<artifactId>StationMisyullaeng</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>StationMisyullaeng</name>
+	<groupId>com.basic</groupId>
+	<artifactId>MySpringBootApp</artifactId>
+	<version>0.0.1-SNAPSHOT</version> <!-- 어플리케이션 버전 -->
+	<name>MySpringBootApp</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
 	<licenses>
@@ -152,7 +152,15 @@
 					</excludes>
 				</configuration>
 			</plugin>
-		</plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>16</source>
+                    <target>16</target>
+                </configuration>
+            </plugin>
+        </plugins>
 	</build>
 
 </project>
