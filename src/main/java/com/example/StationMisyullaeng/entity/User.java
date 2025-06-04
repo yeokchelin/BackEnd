@@ -18,14 +18,16 @@ public class User {
 
     //이거는 PK 설정을 위해 넣은 필드에요
     // 나중에 account_email 필드 권한이 필수 동의로 변경되면 이거 지우고 accountEmail 변수 사용하세요
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long userId;
 
-    /**kakao login api 응답 받은 데이터 목록 링크:
-     *      https://developers.kakao.com/console/app/1254415/product/login/scope
-     *응답 데이터 자료형 링크:
-     *      https://developers.kakao.com/docs/latest/ko/kakaologin/rest-api#req-user-info
+    /**
+     * kakao login api 응답 받은 데이터 목록 링크:
+     * https://developers.kakao.com/console/app/1254415/product/login/scope
+     * 응답 데이터 자료형 링크:
+     * https://developers.kakao.com/docs/latest/ko/kakaologin/rest-api#req-user-info
      */
     @Column(name = "profile_nickname")
     private String profileNickname; //프로필 닉네임
