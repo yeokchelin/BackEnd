@@ -4,10 +4,8 @@ import com.example.StationMisyullaeng.entity.Review;
 import lombok.*;
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor
 @Builder
 public class ReviewResponseDto {
 
@@ -19,14 +17,34 @@ public class ReviewResponseDto {
     private String imagePath;
 
     // Restaurant 정보
-    private Long restaurantId;   // ⭐ 필드명 변경: storeId -> restaurantId
-    private String restaurantName; // ⭐ 필드명 변경: storeName -> restaurantName
+    private Long restaurantId;
+    private String restaurantName;
 
     private LocalDateTime createdAt;
+
+    // 점주 답글 필드
+    private String ownerReplyContent;
+    private LocalDateTime ownerRepliedAt;
+
+    // ★★★ 점주 Kakao ID 필드 추가 (권한 확인용) ★★★
+    private String storeOwnerKakaoId; // 리뷰가 달린 가게의 점주 Kakao ID
 
     public static ReviewResponseDto toDto(Review review) {
         if (review == null) {
             return null;
+        }
+
+        // Restaurant 및 Store 객체 null 체크
+        Long resId = null;
+        String resName = null;
+        String storeOwnerId = null;
+
+        if (review.getRestaurant() != null) {
+            resId = review.getRestaurant().getId();
+            resName = review.getRestaurant().getName();
+            if (review.getRestaurant().getStore() != null) {
+                storeOwnerId = review.getRestaurant().getStore().getKakaoId(); // Store 엔티티의 getKakaoId() 호출
+            }
         }
 
         return ReviewResponseDto.builder()
@@ -36,10 +54,12 @@ public class ReviewResponseDto {
                 .content(review.getContent())
                 .rate(review.getRate())
                 .imagePath(review.getImagePath())
-                // ⭐ Review.getRestaurant()에서 Restaurant 엔티티의 id와 name 필드 가져오기
-                .restaurantId(review.getRestaurant() != null ? review.getRestaurant().getId() : null)
-                .restaurantName(review.getRestaurant() != null ? review.getRestaurant().getName() : null)
+                .restaurantId(resId)
+                .restaurantName(resName)
                 .createdAt(review.getCreatedAt())
+                .ownerReplyContent(review.getOwnerReplyContent())
+                .ownerRepliedAt(review.getOwnerRepliedAt())
+                .storeOwnerKakaoId(storeOwnerId) // ★★★ storeOwnerKakaoId 매핑 ★★★
                 .build();
     }
 }

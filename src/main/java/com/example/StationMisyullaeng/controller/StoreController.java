@@ -12,6 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/store")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:5173") // ★★★ CORS 허용을 위해 추가 (프론트엔드 URL에 맞게) ★★★
 public class StoreController {
 
     private final StoreService storeService;
@@ -43,7 +44,7 @@ public class StoreController {
     }
 
     // 가게 정보 수정
-    @PatchMapping("/{storeId}")
+    @PatchMapping("/{storeId}") // PATCH 매핑은 부분 업데이트에 더 적합합니다.
     public Store updateStore(@PathVariable Long storeId, @RequestBody Store store) {
         return storeService.updateStore(storeId, store);
     }
@@ -54,10 +55,10 @@ public class StoreController {
         storeService.deleteStore(storeId);
     }
 
+    // 사용자(kakaoId)가 등록한 가게 목록 조회
     @GetMapping("/user/{kakaoId}")
     public List<Store> getStoreByUser(@PathVariable String kakaoId) {
         return storeService.getStoresByKakaoId(kakaoId);
     }
 
 }
-

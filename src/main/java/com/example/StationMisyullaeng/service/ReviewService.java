@@ -3,12 +3,14 @@ package com.example.StationMisyullaeng.service;
 import com.example.StationMisyullaeng.dto.ReviewRequestDto;
 import com.example.StationMisyullaeng.dto.ReviewResponseDto;
 import com.example.StationMisyullaeng.entity.Review;
-import com.example.StationMisyullaeng.entity.Restaurant; // ⭐ Restaurant 엔티티 임포트
+import com.example.StationMisyullaeng.entity.Restaurant;
 import com.example.StationMisyullaeng.repository.ReviewRepository;
-import com.example.StationMisyullaeng.repository.RestaurantRepository; // ⭐ RestaurantRepository 임포트
+import com.example.StationMisyullaeng.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,7 +20,7 @@ import java.util.stream.Collectors;
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
-    private final RestaurantRepository restaurantRepository; // ⭐ RestaurantRepository 주입
+    private final RestaurantRepository restaurantRepository;
 
     @Transactional(readOnly = true)
     public ReviewResponseDto getReviewById(Long id) {
@@ -27,11 +29,9 @@ public class ReviewService {
         return ReviewResponseDto.toDto(review);
     }
 
-    // 특정 restaurantId에 대한 리뷰 목록 조회 메서드
     @Transactional(readOnly = true)
-    public List<ReviewResponseDto> getReviewsByRestaurantId(Long restaurantId) { // ⭐ 파라미터명 변경
-        // ⭐ 변경: findByRestaurant_Id를 사용하여 ReviewRepository에서 리뷰 목록을 가져옵니다.
-        List<Review> reviews = reviewRepository.findByRestaurant_Id(restaurantId);
+    public List<ReviewResponseDto> getReviewsByStoreId(Long storeId) {
+        List<Review> reviews = reviewRepository.findByRestaurant_Store_StoreId(storeId);
         return reviews.stream()
                 .map(ReviewResponseDto::toDto)
                 .collect(Collectors.toList());
@@ -39,13 +39,30 @@ public class ReviewService {
 
     @Transactional
     public ReviewResponseDto writeReview(ReviewRequestDto reviewRequestDto) {
-        // ⭐ 중요: reviewRequestDto의 Long restaurantId를 사용하여 Restaurant 엔티티를 조회합니다.
-        Restaurant restaurant = restaurantRepository.findById(reviewRequestDto.getRestaurantId()) // ⭐ findById 사용
+        Restaurant restaurant = restaurantRepository.findById(reviewRequestDto.getRestaurantId())
                 .orElseThrow(() -> new IllegalArgumentException("Restaurant not found with id: " + reviewRequestDto.getRestaurantId()));
 
-        // ReviewRequestDto를 Review 엔티티로 변환할 때 조회된 Restaurant 객체를 넘겨줍니다.
         Review review = reviewRequestDto.toEntity(restaurant);
         Review savedReview = reviewRepository.save(review);
         return ReviewResponseDto.toDto(savedReview);
+    }
+
+    @Transactional
+    public ReviewResponseDto addOwnerReply(Long reviewId, String replyContent) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new IllegalArgumentException("Review not found with id: " + reviewId));
+
+        // 권한 검사: 현재 사용자가 해당 리뷰의 레스토랑을 소유하고 있는지 확인
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentKakaoId = authentication.getName();
+
+        boolean isAuthorized = restaurantRepository.existsByKakaoIdAndRestaurantId(currentKakaoId, review.getRestaurant().getId());
+
+        if (!isAuthorized) {
+            throw new SecurityException("You are not authorized to reply to this review.");
+        }
+
+        review.updateOwnerReply(replyContent);
+        return ReviewResponseDto.toDto(review);
     }
 }
