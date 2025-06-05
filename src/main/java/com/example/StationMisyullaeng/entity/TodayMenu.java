@@ -20,6 +20,9 @@ public class TodayMenu {
     private String description;
 
     private String imageUrl; // 썸네일 이미지 (필요시)
+
+    @Column(nullable = false)
+    private String category;
 }
 
 
