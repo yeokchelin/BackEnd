@@ -42,6 +42,7 @@ public class ReviewController {
         return ResponseEntity.ok(reviewService.addOwnerReply(reviewId, replyContent));
     }
 
+    // 내가 쓴 게시물 가져오기
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<Review>> getReviewsByUser(@PathVariable Long userId) {
         List<Review> reviews = reviewService.findReviewsByUserId(userId);

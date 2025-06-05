@@ -65,6 +65,7 @@ public class FreeBoardController { // ❗️ 클래스 이름 변경
         return ResponseEntity.noContent().build(); // ❗️ 204 No Content 응답 (성공적인 삭제)
     }
 
+    // 내가 쓴 게시물 가져오기
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<FreePostWrite>> getPostsByUser(@PathVariable Long userId) {
         List<FreePostWrite> posts = freeBoardPostService.findPostsByUserId(userId);

@@ -15,6 +15,7 @@ public class FreePostDto {
     private String title;      // 게시글 제목
     private String content;    // 게시글 내용
     private LocalDateTime createdAt; // 생성 시간
+    private Long kakaoUserId;
 
     // ❗️ PostWrite 엔티티를 FreePostDto로 변환하는 정적 팩토리 메서드
     // PostService에서 이 메서드를 사용하고 있습니다.

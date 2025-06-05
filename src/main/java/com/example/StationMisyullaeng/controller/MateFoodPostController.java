@@ -119,6 +119,7 @@ public class MateFoodPostController {
         }
     }
 
+    // 내가 쓴 게시물 가져오기
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<MateFoodPost>> getPostsByUser(@PathVariable Long userId) {
         List<MateFoodPost> posts = mateService.findPostsByUserId(userId);

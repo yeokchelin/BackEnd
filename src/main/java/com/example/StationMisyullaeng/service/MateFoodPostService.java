@@ -53,7 +53,7 @@ public class MateFoodPostService {
                 .recruitCount(matePostDto.getRecruitCount())
                 .preferredGender(matePostDto.getPreferredGender())
                 .status("모집 중")
-                .kakaoUser(kakaoUser) // KakaoUser 엔티티 직접 매핑
+                .user(kakaoUser) // KakaoUser 엔티티 직접 매핑
                 .build();
         MateFoodPost savedPost = mateFoodPostRepository.save(newPost);
         return MatePostDto.fromEntity(savedPost);
@@ -65,7 +65,7 @@ public class MateFoodPostService {
         MateFoodPost existingPost = mateFoodPostRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다: " + postId));
 
-        if (!existingPost.getKakaoUser().getId().equals(currentKakaoUserId)) {
+        if (!existingPost.getUser().getId().equals(currentKakaoUserId)) {
             throw new IllegalArgumentException("게시글을 수정할 권한이 없습니다.");
         }
 
@@ -90,7 +90,7 @@ public class MateFoodPostService {
         MateFoodPost postToDelete = mateFoodPostRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("삭제할 게시글을 찾을 수 없습니다: " + postId));
 
-        if (!postToDelete.getKakaoUser().getId().equals(requestingKakaoUserId)) {
+        if (!postToDelete.getUser().getId().equals(requestingKakaoUserId)) {
             throw new IllegalArgumentException("게시글을 삭제할 권한이 없습니다.");
         }
 
@@ -103,7 +103,7 @@ public class MateFoodPostService {
         MateFoodPost post = mateFoodPostRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다: " + postId));
 
-        if (!post.getKakaoUser().getId().equals(currentKakaoUserId)) {
+        if (!post.getUser().getId().equals(currentKakaoUserId)) {
             throw new IllegalArgumentException("게시글 상태를 변경할 권한이 없습니다.");
         }
 
