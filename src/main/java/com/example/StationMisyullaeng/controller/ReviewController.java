@@ -2,6 +2,7 @@ package com.example.StationMisyullaeng.controller;
 
 import com.example.StationMisyullaeng.dto.ReviewRequestDto;
 import com.example.StationMisyullaeng.dto.ReviewResponseDto;
+import com.example.StationMisyullaeng.entity.Review;
 import com.example.StationMisyullaeng.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -39,5 +40,11 @@ public class ReviewController {
             @RequestBody String replyContent
     ) {
         return ResponseEntity.ok(reviewService.addOwnerReply(reviewId, replyContent));
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Review>> getReviewsByUser(@PathVariable Long userId) {
+        List<Review> reviews = reviewService.findReviewsByUserId(userId);
+        return ResponseEntity.ok(reviews);
     }
 }

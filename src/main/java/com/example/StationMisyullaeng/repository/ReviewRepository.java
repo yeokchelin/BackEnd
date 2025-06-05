@@ -18,4 +18,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     // ★★★ 특정 Restaurant에 연결된 모든 Review 삭제 메서드 추가 ★★★
     // @Transactional 어노테이션은 서비스 계층에서 처리하므로 여기에 필요 없습니다.
     void deleteByRestaurant(Restaurant restaurant);
+
+    List<Review> findByUserId(Long userId);
 }

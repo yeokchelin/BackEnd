@@ -1,6 +1,7 @@
 package com.example.StationMisyullaeng.controller;
 
 import com.example.StationMisyullaeng.dto.MatePostDto;
+import com.example.StationMisyullaeng.entity.MateFoodPost;
 import com.example.StationMisyullaeng.service.MateFoodPostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -116,5 +117,11 @@ public class MateFoodPostController {
             System.err.println("Error updating post status: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<MateFoodPost>> getPostsByUser(@PathVariable Long userId) {
+        List<MateFoodPost> posts = mateService.findPostsByUserId(userId);
+        return ResponseEntity.ok(posts);
     }
 }

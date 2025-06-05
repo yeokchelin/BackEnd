@@ -115,4 +115,9 @@ public class MateFoodPostService {
         MateFoodPost updatedPost = mateFoodPostRepository.save(post);
         return MatePostDto.fromEntity(updatedPost);
     }
+
+    public List<MateFoodPost> findPostsByUserId(Long userId) {
+        return mateFoodPostRepository.findByUserId(userId);
+        // 만약 연관관계면 findByUser_Id(userId)
+    }
 }

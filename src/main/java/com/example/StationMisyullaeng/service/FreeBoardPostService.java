@@ -84,4 +84,9 @@ public class FreeBoardPostService {
             throw new RuntimeException("게시글 삭제 중 오류가 발생했습니다.", e); // 런타임 예외로 다시 던짐
         }
     }
+
+    public List<FreePostWrite> findPostsByUserId(Long userId) {
+        return freePostWriteRepository.findByUserId(userId);
+        // 연관관계면 findByUser_Id(userId)
+    }
 }

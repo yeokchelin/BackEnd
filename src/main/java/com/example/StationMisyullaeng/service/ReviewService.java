@@ -65,4 +65,8 @@ public class ReviewService {
         review.updateOwnerReply(replyContent);
         return ReviewResponseDto.toDto(review);
     }
+
+    public List<Review> findReviewsByUserId(Long userId) {
+        return reviewRepository.findByUserId(userId);
+    }
 }
