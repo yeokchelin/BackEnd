@@ -1,6 +1,5 @@
 package com.example.StationMisyullaeng.service;
 
-import com.example.StationMisyullaeng.entity.Category;
 import com.example.StationMisyullaeng.entity.Restaurant;
 import com.example.StationMisyullaeng.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
@@ -41,14 +40,18 @@ public class RestaurantService {
         return restaurantRepository.findTop10ByOrderByRatingDesc();
     }
 
-    // 카테고리별로 맛집 리스트 반환하기
-    public List<Restaurant> getRestaurantsByCategory(Category category) {
-        return restaurantRepository.findByCategory(category);
+    // 역 이름으로 정보 가져오기
+    public List<String> getRestaurantNamesByStationName(String stationName) {
+        return restaurantRepository.findByStationName(stationName)
+                .stream()
+                .map(Restaurant::getName)
+                .toList();
     }
 
-    //지하철역 이름과 카테고리 별로 맛집 리스트 반환하기
-    public List<Restaurant> getRestaurantsByStationAndCategory(String stationName, Category category){
-        return restaurantRepository.findByStationNameAndCategory(stationName, category);
+    // 역 이름 클릭시 상세정보 제공
+    public Restaurant getById(Long id) {
+        return restaurantRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("음식점 정보를 찾을 수 없습니다."));
     }
 
 

@@ -1,6 +1,6 @@
 package com.example.StationMisyullaeng.controller;
 
-import com.example.StationMisyullaeng.entity.Category;
+import com.example.StationMisyullaeng.dto.StationRequestDto;
 import com.example.StationMisyullaeng.entity.Restaurant;
 import com.example.StationMisyullaeng.service.RestaurantService;
 import lombok.RequiredArgsConstructor;
@@ -8,11 +8,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+
 /*
 TODO : 메인페이지 관련 내용
 TODO : 외부 요청을 받는 진입 지점이야 (API 요청을 처리)
 TODO : 프론트엔드(React)에서 /api/restaurants 등으로 HTTP 요청을 보내면, 그걸 받아서 Service에 전달하고 결과를 응답해 줘
 */
+
 
 @RestController
 @RequiredArgsConstructor
@@ -45,16 +47,15 @@ public class RestaurantController {
         return restaurantService.getTopRatedRestaurants();
     }
 
-    // 카테고리별 맛집 조회
-    @GetMapping("/category/{category}")
-    public List<Restaurant> getByCategory(@PathVariable Category category) {
-        return restaurantService.getRestaurantsByCategory(category);
+    @PostMapping("/by-station")
+    public List<Restaurant> getRestaurantsByStation(@RequestBody StationRequestDto request) {
+        return restaurantService.getRestaurantsByStation(request.getStationName());
     }
-
-    //지하철역과 카테고리로 맛집 리스트 조회
-    @GetMapping("/filter")
-    public List<Restaurant> getByFilter(@RequestParam String stationName,@RequestParam Category category) {
-        return restaurantService.getRestaurantsByStationAndCategory(stationName, category);
+    
+    // 🔍 음식점 ID로 상세 정보 조회
+    @GetMapping("/{id}")
+    public Restaurant getRestaurantById(@PathVariable Long id) {
+        return restaurantService.getById(id);
     }
 
 }

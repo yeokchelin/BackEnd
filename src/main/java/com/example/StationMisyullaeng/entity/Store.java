@@ -2,9 +2,6 @@ package com.example.StationMisyullaeng.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "store")
@@ -15,30 +12,33 @@ import java.util.List;
 @Builder
 public class Store {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "store_id")
-    private Long storeId;       //store 테이블의 PK
+    private Long storeId;
 
     @Column(name = "name", nullable = false)
-    private String name;        //상호명
+    private String name;
 
     @Column(name = "address", nullable = false)
-    private String address;     //주소
+    private String address;
 
     @Column(name = "hours")
-    private String hours;       //영업시간
+    private String hours;
 
     @Column(name = "phone")
-    private String phone;       //연락처
+    private String phone;
 
     @Column(name = "description")
-    private String description; //가게 소개
-    
-    @OneToMany(mappedBy = "store",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true)
-    private List<Menu> menus = new ArrayList<>();   //Menu 테이블과 양방향 연관관계 설정
+    private String description;
 
-    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Favorite> favorites = new ArrayList<>();
+    @Column(name = "kakao_id")
+    private String kakaoId; // 추가: 점주 식별용 kakaoId
+
+    @Column(name = "contact")
+    private String contact;
+
+    @Column(name = "registration_number")
+    private String registrationNumber;
+
 }

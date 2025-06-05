@@ -3,59 +3,49 @@ package com.example.StationMisyullaeng.service;
 import com.example.StationMisyullaeng.dto.ReviewRequestDto;
 import com.example.StationMisyullaeng.dto.ReviewResponseDto;
 import com.example.StationMisyullaeng.entity.Review;
-import com.example.StationMisyullaeng.entity.Store;
+import com.example.StationMisyullaeng.entity.Restaurant; // ⭐ Restaurant 엔티티 임포트
 import com.example.StationMisyullaeng.repository.ReviewRepository;
-import com.example.StationMisyullaeng.repository.StoreRepository;
+import com.example.StationMisyullaeng.repository.RestaurantRepository; // ⭐ RestaurantRepository 임포트
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
-    private final StoreRepository storeRepository;
+    private final RestaurantRepository restaurantRepository; // ⭐ RestaurantRepository 주입
 
-    //리뷰 보기
+    @Transactional(readOnly = true)
     public ReviewResponseDto getReviewById(Long id) {
         Review review = reviewRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("리뷰 없음"));
-
-        return ReviewResponseDto.builder()
-            .reviewId(review.getReviewId())
-            .title(review.getTitle())
-            .content(review.getContent())
-            .rate(review.getRate())
-            .storeId(review.getStoreId().getStoreId())
-            .storeName(review.getStoreId().getName())
-            .build();
+                .orElseThrow(() -> new IllegalArgumentException("Review not found with id: " + id));
+        return ReviewResponseDto.toDto(review);
     }
 
-    //리뷰작성
+    // 특정 restaurantId에 대한 리뷰 목록 조회 메서드
+    @Transactional(readOnly = true)
+    public List<ReviewResponseDto> getReviewsByRestaurantId(Long restaurantId) { // ⭐ 파라미터명 변경
+        // ⭐ 변경: findByRestaurant_Id를 사용하여 ReviewRepository에서 리뷰 목록을 가져옵니다.
+        List<Review> reviews = reviewRepository.findByRestaurant_Id(restaurantId);
+        return reviews.stream()
+                .map(ReviewResponseDto::toDto)
+                .collect(Collectors.toList());
+    }
+
     @Transactional
-    public ReviewResponseDto writeReview(ReviewRequestDto dto) {
-        Store store = storeRepository.findById(dto.getStoreId())
-            .orElseThrow(() -> new RuntimeException("가게 없음"));
+    public ReviewResponseDto writeReview(ReviewRequestDto reviewRequestDto) {
+        // ⭐ 중요: reviewRequestDto의 Long restaurantId를 사용하여 Restaurant 엔티티를 조회합니다.
+        Restaurant restaurant = restaurantRepository.findById(reviewRequestDto.getRestaurantId()) // ⭐ findById 사용
+                .orElseThrow(() -> new IllegalArgumentException("Restaurant not found with id: " + reviewRequestDto.getRestaurantId()));
 
-        Review review = Review.builder()
-            .title(dto.getTitle())
-            .content(dto.getContent())
-            .rate(dto.getRate())
-            .storeId(store)
-            .build();
-
+        // ReviewRequestDto를 Review 엔티티로 변환할 때 조회된 Restaurant 객체를 넘겨줍니다.
+        Review review = reviewRequestDto.toEntity(restaurant);
         Review savedReview = reviewRepository.save(review);
-
-        return ReviewResponseDto.builder()
-            .reviewId(savedReview.getReviewId())
-            .title(savedReview.getTitle())
-            .content(savedReview.getContent())
-            .rate(savedReview.getRate())
-            .storeId(store.getStoreId())
-            .storeName(store.getName())
-            .build();
+        return ReviewResponseDto.toDto(savedReview);
     }
-
 }

@@ -1,6 +1,9 @@
 package com.example.StationMisyullaeng.service;
 
+import com.example.StationMisyullaeng.entity.KakaoUser;
 import com.example.StationMisyullaeng.entity.Store;
+import com.example.StationMisyullaeng.entity.UserGrade;
+import com.example.StationMisyullaeng.repository.KakaoUserRepository;
 import com.example.StationMisyullaeng.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,10 +16,10 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class StoreService {
 
     private final StoreRepository storeRepository;
+    private final KakaoUserRepository kakaoUserRepository; // ✅ 등급 변경을 위해 추가
 
 
     //모든 가게 조회
@@ -44,6 +47,8 @@ public class StoreService {
     //가게 등록
     @Transactional
     public Store createStore(Store store){
+        System.out.println("📥 [StoreService] createStore() 호출됨");
+        System.out.println("📦 받은 Store 객체: " + store);
         return storeRepository.save(store); //레포지토리를 이용해서 저장하기
     }
 
@@ -89,5 +94,33 @@ public class StoreService {
 
     }
 
+    // 가게 삭제
+    @Transactional
+    public void deleteStore(Long storeId) {
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "삭제할 가게가 존재하지 않습니다."
+                ));
+
+        String kakaoId = store.getKakaoId(); // 삭제 전에 사용자 ID 저장
+        storeRepository.delete(store);
+
+        // 남은 가게가 없으면 등급을 일반으로 변경
+        List<Store> remainingStores = storeRepository.findByKakaoId(kakaoId);
+        if (remainingStores.isEmpty()) {
+            KakaoUser user = kakaoUserRepository.findByKakaoId(kakaoId)
+                    .orElseThrow(() -> new ResponseStatusException(
+                            HttpStatus.NOT_FOUND,
+                            "사용자를 찾을 수 없습니다."
+                    ));
+            user.setGrade(UserGrade.GENERAL);
+            // save 호출 없이도 트랜잭션 커밋 시 자동 반영됨 (Dirty Checking)
+        }
+    }
+
+    public List<Store> getStoresByKakaoId(String kakaoId) {
+        return storeRepository.findByKakaoId(kakaoId);
+    }
 
 }

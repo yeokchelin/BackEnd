@@ -1,8 +1,11 @@
 package com.example.StationMisyullaeng.entity;
 
-
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
+import com.example.StationMisyullaeng.entity.Comment;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "board_free")
@@ -16,7 +19,12 @@ public class PostWrite {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_id")
-    private String id;
+    private Long id;
+
+    // KakaoUser와의 관계 추가
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "user_id", nullable = false)
+//    private KakaoUser user;
 
     @Column(nullable = false, length = 50)
     private String writer;
@@ -27,5 +35,9 @@ public class PostWrite {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Comment> comments = new ArrayList<>();
 
 }
+
