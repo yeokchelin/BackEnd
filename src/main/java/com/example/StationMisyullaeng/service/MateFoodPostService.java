@@ -1,63 +1,76 @@
 package com.example.StationMisyullaeng.service;
 
-import com.example.StationMisyullaeng.dto.MatePostDto; // 실제 DTO 경로로 수정하세요.
-import com.example.StationMisyullaeng.entity.MateFoodPost; // 실제 엔티티 경로
-import com.example.StationMisyullaeng.repository.MateFoodPostRepository; // 실제 레포지토리 경로
+import com.example.StationMisyullaeng.dto.MatePostDto;
+import com.example.StationMisyullaeng.entity.MateFoodPost;
+import com.example.StationMisyullaeng.entity.KakaoUser;
+import com.example.StationMisyullaeng.repository.MateFoodPostRepository;
+import com.example.StationMisyullaeng.repository.KakaoUserRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional; // 트랜잭션 관리를 위해 추가
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime; // 필요한 경우 LocalDateTime import
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class MateFoodPostService {
 
     private final MateFoodPostRepository mateFoodPostRepository;
+    private final KakaoUserRepository kakaoUserRepository;
 
-    // 예시: DTO 변환을 위한 정적 팩토리 메서드가 MatePostDto에 있다고 가정
-    // public static MatePostDto fromEntity(MateFoodPost entity) { ... }
-
-    // 기존의 모든 서비스 메서드는 그대로 유지
-    // 예시: 전체 게시글 조회
+    // 전체 게시글 조회
+    @Transactional(readOnly = true)
     public List<MatePostDto> getAllPosts() {
         return mateFoodPostRepository.findAll().stream()
-                .map(MatePostDto::fromEntity) // 엔티티를 DTO로 변환
-                .toList();
+                .map(MatePostDto::fromEntity)
+                .collect(Collectors.toList());
     }
 
-    // 예시: 특정 ID 게시글 조회
+    // 특정 ID 게시글 조회
+    @Transactional(readOnly = true)
     public MatePostDto getPostById(Long postId) {
         MateFoodPost post = mateFoodPostRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다: " + postId));
         return MatePostDto.fromEntity(post);
     }
 
-    // 예시: 새 게시글 생성
+    // 새 게시글 생성
     @Transactional
     public MatePostDto createPost(MatePostDto matePostDto) {
-        // DTO를 엔티티로 변환하여 저장
+        KakaoUser kakaoUser = kakaoUserRepository.findById(matePostDto.getKakaoUserId())
+                .orElseThrow(() -> new IllegalArgumentException("작성자를 찾을 수 없습니다: " + matePostDto.getKakaoUserId()));
+
         MateFoodPost newPost = MateFoodPost.builder()
-                .writer(matePostDto.getWriter())
+                // ★★★ writer 필드를 KakaoUser의 닉네임으로 설정 (DB 스키마에 writer 컬럼 존재) ★★★
+                .writer(kakaoUser.getNickname())
                 .title(matePostDto.getTitle())
                 .content(matePostDto.getContent())
                 .meetingStation(matePostDto.getMeetingStation())
                 .meetingTime(matePostDto.getMeetingTime())
                 .recruitCount(matePostDto.getRecruitCount())
                 .preferredGender(matePostDto.getPreferredGender())
-                .status("모집 중") // 초기 상태는 "모집 중"
-                .createdAt(LocalDateTime.now()) // 생성 시간 자동 설정
+                .status("모집 중")
+                .kakaoUser(kakaoUser) // KakaoUser 엔티티 직접 매핑
                 .build();
         MateFoodPost savedPost = mateFoodPostRepository.save(newPost);
         return MatePostDto.fromEntity(savedPost);
     }
 
-    // 예시: 게시글 수정
+    // 게시글 수정 (이전 제안과 동일)
     @Transactional
-    public MatePostDto updatePost(Long postId, MatePostDto matePostDto) {
+    public MatePostDto updatePost(Long postId, MatePostDto matePostDto, Long currentKakaoUserId) {
         MateFoodPost existingPost = mateFoodPostRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다: " + postId));
+
+        if (!existingPost.getKakaoUser().getId().equals(currentKakaoUserId)) {
+            throw new IllegalArgumentException("게시글을 수정할 권한이 없습니다.");
+        }
+
+        // writer 필드도 DTO에서 받은 값으로 업데이트 (선택 사항)
+        existingPost.setWriter(matePostDto.getWriter()); // DTO의 writer 값을 엔티티에 반영
 
         existingPost.setTitle(matePostDto.getTitle());
         existingPost.setContent(matePostDto.getContent());
@@ -65,34 +78,40 @@ public class MateFoodPostService {
         existingPost.setMeetingTime(matePostDto.getMeetingTime());
         existingPost.setRecruitCount(matePostDto.getRecruitCount());
         existingPost.setPreferredGender(matePostDto.getPreferredGender());
-        // status는 직접 수정하지 않고, updatePostStatus를 통해 변경하도록 합니다.
-        // existingPost.setStatus(matePostDto.getStatus()); // 필요한 경우 주석 해제하여 DTO의 상태도 반영
+        existingPost.setStatus(matePostDto.getStatus());
 
-        MateFoodPost updatedPost = mateFoodPostRepository.save(existingPost);
-        return MatePostDto.fromEntity(updatedPost);
+        MateFoodPost savedPost = mateFoodPostRepository.save(existingPost);
+        return MatePostDto.fromEntity(savedPost);
     }
 
-    // 예시: 게시글 삭제
+    // 게시글 삭제 (이전 제안과 동일)
     @Transactional
-    public void deletePost(Long postId) {
-        if (!mateFoodPostRepository.existsById(postId)) {
-            throw new IllegalArgumentException("삭제할 게시글을 찾을 수 없습니다: " + postId);
+    public void deletePost(Long postId, Long requestingKakaoUserId) {
+        MateFoodPost postToDelete = mateFoodPostRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("삭제할 게시글을 찾을 수 없습니다: " + postId));
+
+        if (!postToDelete.getKakaoUser().getId().equals(requestingKakaoUserId)) {
+            throw new IllegalArgumentException("게시글을 삭제할 권한이 없습니다.");
         }
+
         mateFoodPostRepository.deleteById(postId);
     }
 
-    // 새로운 서비스 메서드: 게시글 상태 변경
+    // 새로운 서비스 메서드: 게시글 상태 변경 (이전 제안과 동일)
     @Transactional
-    public MatePostDto updatePostStatus(Long postId, String newStatus) {
+    public MatePostDto updatePostStatus(Long postId, String newStatus, Long currentKakaoUserId) {
         MateFoodPost post = mateFoodPostRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다: " + postId));
 
-        // 상태 변경 로직 추가: 유효한 상태 값인지 확인
+        if (!post.getKakaoUser().getId().equals(currentKakaoUserId)) {
+            throw new IllegalArgumentException("게시글 상태를 변경할 권한이 없습니다.");
+        }
+
         if (!"모집 완료".equals(newStatus) && !"모집 중".equals(newStatus)) {
             throw new IllegalArgumentException("유효하지 않은 게시글 상태입니다: " + newStatus);
         }
 
-        post.setStatus(newStatus); // MateFoodPost 엔티티에 setStatus() 메서드가 정의되어 있어야 합니다.
+        post.setStatus(newStatus);
         MateFoodPost updatedPost = mateFoodPostRepository.save(post);
         return MatePostDto.fromEntity(updatedPost);
     }

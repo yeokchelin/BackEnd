@@ -1,7 +1,7 @@
-// src/main/java/com/example/StationMisyullaeng/dto/MatePostDto.java
-package com.example.StationMisyullaeng.dto; // 실제 프로젝트 패키지 경로로 수정하세요.
+package com.example.StationMisyullaeng.dto;
 
 import com.example.StationMisyullaeng.entity.MateFoodPost;
+import com.example.StationMisyullaeng.entity.KakaoUser; // KakaoUser 엔티티를 직접 사용하므로 임포트 필요
 import lombok.*;
 import java.time.LocalDateTime;
 
@@ -12,7 +12,9 @@ import java.time.LocalDateTime;
 @Builder
 public class MatePostDto {
     private Long id;
-    private String writer;
+    // ★★★ writer 필드 유지 ★★★
+    private String writer; // 게시글 작성자 닉네임 (DB 컬럼과 매핑, 프론트엔드 표시용)
+
     private String title;
     private String content;
     private String meetingStation;
@@ -23,11 +25,22 @@ public class MatePostDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    // --- 추가 필드 (유지) ---
+    private Long kakaoUserId; // 게시글 작성자의 KakaoUser ID
+    private String writerAvatarUrl; // 게시글 작성자의 아바타 URL
+    // ---------------
+
     // Entity -> DTO 변환 메서드
     public static MatePostDto fromEntity(MateFoodPost entity) {
+        // null 체크를 통해 NullPointerException 방지
+        Long userId = (entity.getKakaoUser() != null) ? entity.getKakaoUser().getId() : null;
+        // writer 필드는 KakaoUser 닉네임을 우선하고, KakaoUser가 없으면 entity.getWriter() 사용
+        String nickname = (entity.getKakaoUser() != null) ? entity.getKakaoUser().getNickname() : entity.getWriter();
+        String avatarUrl = (entity.getKakaoUser() != null) ? entity.getKakaoUser().getProfileImage() : null;
+
         return MatePostDto.builder()
                 .id(entity.getId())
-                .writer(entity.getWriter())
+                .writer(nickname) // ★★★ writer 필드를 KakaoUser 닉네임 또는 기존 writer로 채움 ★★★
                 .title(entity.getTitle())
                 .content(entity.getContent())
                 .meetingStation(entity.getMeetingStation())
@@ -37,23 +50,26 @@ public class MatePostDto {
                 .status(entity.getStatus())
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
+                // --- 추가된 필드 매핑 ---
+                .kakaoUserId(userId)
+                .writerAvatarUrl(avatarUrl)
+                // -----------------------
                 .build();
     }
 
     // DTO -> Entity 변환 메서드 (주로 생성/수정 시 사용)
     public MateFoodPost toEntity() {
         return MateFoodPost.builder()
-                // id는 DB에서 자동 생성되므로 toEntity에서는 보통 설정하지 않거나,
-                // 업데이트 시에는 기존 id를 사용해야 함. 여기서는 생성 시를 가정.
-                .writer(this.writer)
+                // ★★★ writer 필드도 DTO에서 엔티티로 전달 ★★★
+                .writer(this.writer) // DTO의 writer 값을 엔티티의 writer 필드로 매핑
                 .title(this.title)
                 .content(this.content)
                 .meetingStation(this.meetingStation)
                 .meetingTime(this.meetingTime)
                 .recruitCount(this.recruitCount)
                 .preferredGender(this.preferredGender)
-                .status(this.status) // 상태 값도 DTO에서 받을 수 있도록
-                // createdAt, updatedAt은 DB나 JPA Auditing으로 자동 관리되므로 설정 안 함
+                .status(this.status)
+                // createdAt, updatedAt, kakaoUser는 여기서 설정하지 않음 (서비스에서 처리)
                 .build();
     }
 }

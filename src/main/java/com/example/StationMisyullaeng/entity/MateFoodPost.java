@@ -1,5 +1,4 @@
-// src/main/java/com/example/StationMisyullaeng/entity/MateFoodPost.java
-package com.example.StationMisyullaeng.entity; // 실제 프로젝트 패키지 경로로 수정하세요.
+package com.example.StationMisyullaeng.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -8,48 +7,67 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "board_mate_food") // 테이블명 (기존 로그에서는 boardmatefood 였으나, board_mate_food가 더 일반적)
+@Table(name = "board_mate_food")
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED) // JPA는 기본 생성자를 필요로 함
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 public class MateFoodPost {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // 데이터베이스의 AUTO_INCREMENT 사용
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_id")
     private Long id;
 
+    // ★★★ writer 필드 유지 (DB 스키마에 존재) ★★★
     @Column(nullable = false, length = 50)
     private String writer; // 작성자 닉네임
 
     @Column(nullable = false, length = 100)
-    private String title; // 게시글 제목
+    private String title;
 
     @Column(nullable = false, columnDefinition = "TEXT")
-    private String content; // 게시글 내용
+    private String content;
 
     @Column(name = "meeting_station", length = 50)
-    private String meetingStation; // 만날 역
+    private String meetingStation;
 
-    @Column(name = "meeting_time", length = 50) // 시간 형식 및 길이를 고려하여 설정
-    private String meetingTime;  // 예: "오후 7시", "19:00"
+    @Column(name = "meeting_time", length = 50)
+    private String meetingTime;
 
     @Column(name = "recruit_count")
-    private Integer recruitCount; // 모집 인원 (본인 제외 인원 또는 총 인원)
+    private Integer recruitCount;
 
     @Column(name = "preferred_gender", length = 10)
-    private String preferredGender;  // 예: "무관", "여성", "남성"
+    private String preferredGender;
 
     @Column(length = 20, nullable = false)
-    private String status; // 게시글 상태 (예: "모집 중", "모집 완료")
+    private String status;
 
-    @CreationTimestamp // 엔티티 생성 시 자동으로 현재 시간 저장
+    @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @UpdateTimestamp // 엔티티 수정 시 자동으로 현재 시간 저장
+    @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    // ★★★ KakaoUser 엔티티와의 관계 (DB 스키마에 kakao_user_id 컬럼 존재) ★★★
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "kakao_user_id", nullable = false)
+    private KakaoUser kakaoUser; // ❗️ KakaoUser 엔티티의 실제 패키지 경로를 임포트하세요.
+
+    // 게시글 수정 시 호출될 메서드 (필요하다면)
+    public void update(String title, String content, String meetingStation, String meetingTime,
+                       Integer recruitCount, String preferredGender, String status) {
+        this.title = title;
+        this.content = content;
+        this.meetingStation = meetingStation;
+        this.meetingTime = meetingTime;
+        this.recruitCount = recruitCount;
+        this.preferredGender = preferredGender;
+        this.status = status;
+        // updatedAt은 @UpdateTimestamp에 의해 자동으로 갱신됩니다.
+    }
 }
