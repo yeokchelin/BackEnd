@@ -36,5 +36,18 @@ public class CommentService {
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
         return commentRepository.findByPostOrderByIdDesc(post);
     }
+
+    public void deleteComment(Long commentId) {
+        commentRepository.deleteById(commentId);
+    }
+
+    public Comment updateComment(Long commentId, Comment updated) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("댓글을 찾을 수 없습니다."));
+        comment.setContent(updated.getContent());
+        // (필요하면 updatedAt 갱신)
+        return commentRepository.save(comment);
+    }
+
 }
 
