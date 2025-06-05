@@ -24,4 +24,17 @@ public class CommentController {
     public List<Comment> getComments(@PathVariable Long postId) {
         return commentService.getComments(postId);
     }
+
+    // 삭제
+    @DeleteMapping("/{commentId}")
+    public void deleteComment(@PathVariable Long commentId) {
+        commentService.deleteComment(commentId);
+    }
+
+    // 수정
+    @PutMapping("/{commentId}")
+    public Comment updateComment(@PathVariable Long commentId, @RequestBody Comment comment) {
+        return commentService.updateComment(commentId, comment);
+    }
+
 }
