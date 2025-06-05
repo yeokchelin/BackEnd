@@ -27,14 +27,14 @@ public class KakaoUser {
     private UserGrade grade = UserGrade.GENERAL;
 
     //양방향 관계 추가
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<MateFoodPost> mateFoodPosts = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<PostWrite> posts = new ArrayList<>();
-    
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Review> reviews = new ArrayList<>();
-    
+//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+//    private List<MateFoodPost> mateFoodPosts = new ArrayList<>();
+//
+//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+//    private List<PostWrite> posts = new ArrayList<>();
+//
+//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+//    private List<Review> reviews = new ArrayList<>();
+//
 
 }

@@ -22,9 +22,9 @@ public class MateFoodPost {
     private Long id;
 
     // KakaoUser와의 관계 추가
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private KakaoUser user;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "user_id", nullable = false)
+//    private KakaoUser user;
 
     @Column(nullable = false, length = 50)
     private String writer; // 작성자 닉네임

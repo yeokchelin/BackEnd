@@ -23,9 +23,9 @@ public class Review {
     private Long reviewId;
 
     // KakaoUser와의 관계 추가
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private KakaoUser user;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "user_id", nullable = false)
+//    private KakaoUser user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id", nullable = false) // ⭐ FK 컬럼명 변경: store_id -> restaurant_id
