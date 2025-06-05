@@ -29,7 +29,7 @@ public class KakaoAuthService {
     @Value("${jwt.secret}")
     private String jwtSecret;
 
-    private final KakaoUserRepository memberRepository;
+    private final KakaoUserRepository memberRepository; // memberRepository는 KakaoUserRepository입니다.
     private final RestTemplate restTemplate = new RestTemplate();
 
     public String kakaoLogin(String code) {
@@ -84,15 +84,25 @@ public class KakaoAuthService {
                 });
 
         // 4. JWT 생성 후 반환
-        return createJwt(member.getKakaoId());
+        // ❗️ member.getKakaoId() (String) 대신 KakaoUser 객체 자체를 전달합니다.
+        return createJwt(member);
     }
 
-    private String createJwt(String email) {
+    // ❗️ 메서드 시그니처 변경: email (String) 대신 KakaoUser 객체를 받습니다.
+    private String createJwt(KakaoUser kakaoUser) {
+        // JWT 만료 시간 설정 (예시: 1시간)
+        long jwtExpirationMs = 3600000; // 1시간 (밀리초)
+
         return Jwts.builder()
-                .setSubject(email)
+                .setSubject(kakaoUser.getKakaoId()) // 'sub' 클레임은 카카오 고유 ID (String)
+                // ❗️❗️❗️ 핵심 수정: 'userId', 'nickname', 'profileImage' 클레임을 추가합니다. ❗️❗️❗️
+                .claim("userId", kakaoUser.getId())             // KakaoUser의 DB ID (Long)
+                .claim("nickname", kakaoUser.getNickname())     // 사용자 닉네임
+                .claim("profileImage", kakaoUser.getProfileImage()) // 프로필 이미지 URL
+
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 3600000)) // 1시간
-                .signWith(SignatureAlgorithm.HS256, jwtSecret.getBytes())
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs)) // 1시간
+                .signWith(SignatureAlgorithm.HS256, jwtSecret.getBytes()) // jwtSecret.getBytes()는 안전한 방식입니다.
                 .compact();
     }
 }
