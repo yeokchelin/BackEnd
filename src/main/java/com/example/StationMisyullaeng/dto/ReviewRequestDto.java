@@ -1,5 +1,6 @@
 package com.example.StationMisyullaeng.dto;
 
+import com.example.StationMisyullaeng.entity.KakaoUser;
 import com.example.StationMisyullaeng.entity.Review;
 import com.example.StationMisyullaeng.entity.Restaurant;
 import lombok.*;
@@ -9,6 +10,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class ReviewRequestDto {
+    private Long userId;
     private String author;
     private String title;
     private String content;
@@ -24,13 +26,14 @@ public class ReviewRequestDto {
     // 답글 API는 별도의 DTO 또는 직접 문자열을 받는 방식으로 구현을 고려합니다.
     // => 이 DTO는 리뷰 작성용으로 유지하고, 답글은 PATCH 등으로 Review ID와 content만 받도록 하겠습니다.
 
-    public Review toEntity(Restaurant restaurant) {
+    public Review toEntity(Restaurant restaurant, KakaoUser user) {
         return Review.builder()
                 .author(this.author)
                 .title(this.title)
                 .content(this.content)
                 .rate(this.rate)
                 .restaurant(restaurant)
+                .user(user)
                 .build();
     }
 }

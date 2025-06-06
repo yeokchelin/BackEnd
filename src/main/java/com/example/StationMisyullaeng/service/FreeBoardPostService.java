@@ -2,7 +2,9 @@ package com.example.StationMisyullaeng.service;
 
 import com.example.StationMisyullaeng.dto.FreePostDto;
 import com.example.StationMisyullaeng.entity.FreePostWrite;
+import com.example.StationMisyullaeng.entity.KakaoUser;
 import com.example.StationMisyullaeng.repository.FreePostRepository; // 이 부분이 FreePostWriteRepository일 수도 있습니다.
+import com.example.StationMisyullaeng.repository.KakaoUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,16 +18,22 @@ import java.util.stream.Collectors;
 public class FreeBoardPostService {
 
     private final FreePostRepository freePostWriteRepository; // 실제 레포지토리 이름에 맞게 조정하세요.
+    private final KakaoUserRepository kakaoUserRepository;
 
     // 게시글 생성
     @Transactional
     public FreePostDto createFreePost(FreePostDto freePostDto) {
+        KakaoUser kakaoUser = kakaoUserRepository.findById(freePostDto.getKakaoUserId())
+                .orElseThrow(() -> new IllegalArgumentException("작성자를 찾을 수 없습니다: " + freePostDto.getKakaoUserId()));
+
+
         FreePostWrite freePostWrite = FreePostWrite.builder()
                 .title(freePostDto.getTitle())
                 .content(freePostDto.getContent())
                 .writer(freePostDto.getWriter())
                 // .kakaoUserId(freePostDto.getKakaoUserId()) // FreePostWrite 엔티티에 kakaoUserId 필드가 있는지 확인 필요
                 .createdAt(LocalDateTime.now())
+                .user(kakaoUser)
                 .build();
         FreePostWrite savedPost = freePostWriteRepository.save(freePostWrite);
         return FreePostDto.fromEntity(savedPost);
@@ -83,5 +91,12 @@ public class FreeBoardPostService {
             System.err.println("ERROR: 게시글 삭제 중 예외 발생. ID: " + postId + ", 예외: " + e.getMessage()); // ❗️ 추가 로그 5 (삭제 자체의 문제)
             throw new RuntimeException("게시글 삭제 중 오류가 발생했습니다.", e); // 런타임 예외로 다시 던짐
         }
+    }
+
+    public List<FreePostDto> findPostsByUserId(Long userId) {
+        return freePostWriteRepository.findByUserId(userId)
+                .stream()
+                .map(FreePostDto::fromEntity)
+                .collect(Collectors.toList());
     }
 }

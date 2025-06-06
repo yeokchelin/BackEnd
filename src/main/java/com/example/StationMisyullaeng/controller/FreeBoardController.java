@@ -1,6 +1,7 @@
 package com.example.StationMisyullaeng.controller;
 
 import com.example.StationMisyullaeng.dto.FreePostDto; // ❗️ FreePostDto 임포트
+import com.example.StationMisyullaeng.entity.FreePostWrite;
 import com.example.StationMisyullaeng.service.FreeBoardPostService; // ❗️ FreeBoardPostService 임포트
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -62,5 +63,12 @@ public class FreeBoardController { // ❗️ 클래스 이름 변경
     public ResponseEntity<Void> deleteFreePost(@PathVariable Long postId) { // ❗️ 반환 타입 변경
         freeBoardPostService.deletePost(postId); // ❗️ 서비스 메서드 호출
         return ResponseEntity.noContent().build(); // ❗️ 204 No Content 응답 (성공적인 삭제)
+    }
+
+    // 내가 쓴 게시물 가져오기
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<FreePostDto>> getFreePostsByUser(@PathVariable Long userId) {
+        List<FreePostDto> posts = freeBoardPostService.findPostsByUserId(userId);
+        return ResponseEntity.ok(posts);
     }
 }

@@ -12,4 +12,6 @@ public interface MateFoodPostRepository extends JpaRepository<MateFoodPost, Long
     // 필요에 따라 커스텀 쿼리 메서드 추가 가능
     // 예: 최신순으로 정렬하여 모든 게시글 조회
     List<MateFoodPost> findAllByOrderByCreatedAtDesc();
+
+    List<MateFoodPost> findByUserId(Long userId); // userId가 작성자 PK라고 가정!
 }

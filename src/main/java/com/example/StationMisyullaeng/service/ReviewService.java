@@ -2,8 +2,10 @@ package com.example.StationMisyullaeng.service;
 
 import com.example.StationMisyullaeng.dto.ReviewRequestDto;
 import com.example.StationMisyullaeng.dto.ReviewResponseDto;
+import com.example.StationMisyullaeng.entity.KakaoUser;
 import com.example.StationMisyullaeng.entity.Review;
 import com.example.StationMisyullaeng.entity.Restaurant;
+import com.example.StationMisyullaeng.repository.KakaoUserRepository;
 import com.example.StationMisyullaeng.repository.ReviewRepository;
 import com.example.StationMisyullaeng.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,7 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final RestaurantRepository restaurantRepository;
+    private final KakaoUserRepository kakaoUserRepository;
 
     @Transactional(readOnly = true)
     public ReviewResponseDto getReviewById(Long id) {
@@ -39,10 +42,16 @@ public class ReviewService {
 
     @Transactional
     public ReviewResponseDto writeReview(ReviewRequestDto reviewRequestDto) {
+        if (reviewRequestDto.getUserId() == null) {
+            throw new IllegalArgumentException("userId는 null일 수 없습니다.");
+        }
         Restaurant restaurant = restaurantRepository.findById(reviewRequestDto.getRestaurantId())
                 .orElseThrow(() -> new IllegalArgumentException("Restaurant not found with id: " + reviewRequestDto.getRestaurantId()));
 
-        Review review = reviewRequestDto.toEntity(restaurant);
+        KakaoUser user = kakaoUserRepository.findById(reviewRequestDto.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        Review review = reviewRequestDto.toEntity(restaurant, user);
         Review savedReview = reviewRepository.save(review);
         return ReviewResponseDto.toDto(savedReview);
     }
@@ -64,5 +73,13 @@ public class ReviewService {
 
         review.updateOwnerReply(replyContent);
         return ReviewResponseDto.toDto(review);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ReviewResponseDto> findReviewDtosByUserId(Long userId) {
+        List<Review> reviews = reviewRepository.findByUserId(userId);
+        return reviews.stream()
+                .map(ReviewResponseDto::toDto)
+                .collect(Collectors.toList());
     }
 }

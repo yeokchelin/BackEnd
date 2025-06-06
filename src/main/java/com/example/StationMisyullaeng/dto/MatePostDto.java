@@ -33,10 +33,10 @@ public class MatePostDto {
     // Entity -> DTO 변환 메서드
     public static MatePostDto fromEntity(MateFoodPost entity) {
         // null 체크를 통해 NullPointerException 방지
-        Long userId = (entity.getKakaoUser() != null) ? entity.getKakaoUser().getId() : null;
+        Long userId = (entity.getUser() != null) ? entity.getUser().getId() : null;
         // writer 필드는 KakaoUser 닉네임을 우선하고, KakaoUser가 없으면 entity.getWriter() 사용
-        String nickname = (entity.getKakaoUser() != null) ? entity.getKakaoUser().getNickname() : entity.getWriter();
-        String avatarUrl = (entity.getKakaoUser() != null) ? entity.getKakaoUser().getProfileImage() : null;
+        String nickname = (entity.getUser() != null) ? entity.getUser().getNickname() : entity.getWriter();
+        String avatarUrl = (entity.getUser() != null) ? entity.getUser().getProfileImage() : null;
 
         return MatePostDto.builder()
                 .id(entity.getId())
