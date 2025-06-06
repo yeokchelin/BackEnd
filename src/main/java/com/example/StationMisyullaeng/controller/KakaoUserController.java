@@ -22,4 +22,3 @@ public class KakaoUserController {
         kakaoUserService.updateUserGrade(kakaoId, grade);
     }
 }
-

@@ -33,7 +33,7 @@ public class Store {
     private String description;
 
     @Column(name = "kakao_id")
-    private String kakaoId; // 추가: 점주 식별용 kakaoId
+    private String kakaoId;
 
     @Column(name = "contact")
     private String contact;
@@ -41,4 +41,27 @@ public class Store {
     @Column(name = "registration_number")
     private String registrationNumber;
 
+    @Column(name = "category")
+    private String category;
+
+    @Column(name = "image_url", length = 500)
+    private String imageUrl;
+
+    @Column(name = "meeting_station", length = 50)
+    private String meetingStation;
+
+    // 편의 메서드
+    public void updateInfo(String name, String address, String hours, String contact,
+                           String description, String registrationNumber, String category, String imageUrl,
+                           String meetingStation) {
+        this.name = name;
+        this.address = address;
+        this.hours = hours;
+        this.contact = contact;
+        this.description = description;
+        this.registrationNumber = registrationNumber;
+        this.category = category;
+        this.imageUrl = imageUrl;
+        this.meetingStation = meetingStation;
+    }
 }

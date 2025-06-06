@@ -9,9 +9,6 @@ import java.util.List;
 
 @Repository
 public interface StoreRepository extends JpaRepository<Store, Long> {
-    //select * from store where name like '%name%'
     List<Store> findByNameContaining(String name);
     List<Store> findByKakaoId(String kakaoId);
-
-
 }

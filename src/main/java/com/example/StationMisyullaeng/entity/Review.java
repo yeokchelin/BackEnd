@@ -9,10 +9,8 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "review")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor
 @Builder
 @EntityListeners(AuditingEntityListener.class)
 public class Review {
@@ -23,8 +21,8 @@ public class Review {
     private Long reviewId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "restaurant_id", nullable = false) // ⭐ FK 컬럼명 변경: store_id -> restaurant_id
-    private Restaurant restaurant;    // ⭐ 타입 변경: Store -> Restaurant
+    @JoinColumn(name = "restaurant_id", nullable = false)
+    private Restaurant restaurant;
 
     @Column(name = "author", nullable = false, length = 50)
     private String author;
@@ -44,4 +42,23 @@ public class Review {
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+
+    // ★★★ 점주 답글 필드 추가 ★★★
+    @Column(name = "owner_reply_content", columnDefinition = "TEXT")
+    private String ownerReplyContent;
+
+    @Column(name = "owner_replied_at")
+    private LocalDateTime ownerRepliedAt;
+
+    // 편의 메서드: 답글 업데이트
+    public void updateOwnerReply(String replyContent) {
+        this.ownerReplyContent = replyContent;
+        this.ownerRepliedAt = LocalDateTime.now();
+    }
+
+    // 답글 삭제 (필요시)
+    public void clearOwnerReply() {
+        this.ownerReplyContent = null;
+        this.ownerRepliedAt = null;
+    }
 }

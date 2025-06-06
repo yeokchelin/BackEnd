@@ -1,17 +1,17 @@
 package com.example.StationMisyullaeng.controller;
 
-import com.example.StationMisyullaeng.dto.MatePostDto; // 실제 DTO 경로로 수정하세요.
-import com.example.StationMisyullaeng.service.MateFoodPostService; // 실제 서비스 경로로 수정하세요.
+import com.example.StationMisyullaeng.dto.MatePostDto;
+import com.example.StationMisyullaeng.service.MateFoodPostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map; // Map을 사용하기 위해 import 추가
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/boardmatefood") // 프론트엔드의 API_BASE_URL과 일치하도록 "/api"를 유지합니다.
+@RequestMapping("/api/boardmatefood")
 @RequiredArgsConstructor
 public class MateFoodPostController {
 
@@ -36,52 +36,84 @@ public class MateFoodPostController {
     }
 
     // 새 게시글 작성
+    // POST /api/boardmatefood/write
     @PostMapping("/write")
     public ResponseEntity<MatePostDto> createPost(@RequestBody MatePostDto matePostDto) {
+        // matePostDto에는 이미 kakaoUserId가 포함되어 있다고 가정합니다.
+        // 서비스 계층에서 이 kakaoUserId를 이용하여 KakaoUser 엔티티를 조회하고 매핑합니다.
         MatePostDto createdPost = mateService.createPost(matePostDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPost);
     }
 
     // 게시글 수정 (PUT 요청)
+    // PUT /api/boardmatefood/posts/{postId}
     @PutMapping("/posts/{postId}")
-    public ResponseEntity<MatePostDto> updatePost(@PathVariable Long postId, @RequestBody MatePostDto matePostDto) {
+    public ResponseEntity<MatePostDto> updatePost(
+            @PathVariable Long postId,
+            @RequestBody MatePostDto matePostDto, // 수정할 내용 (title, content 등)
+            @RequestParam Long currentKakaoUserId // ★★★ 현재 로그인된 사용자 ID를 쿼리 파라미터로 받음 ★★★
+    ) {
         try {
-            MatePostDto updatedPost = mateService.updatePost(postId, matePostDto);
+            // 서비스 계층으로 postId, DTO, 그리고 요청자 ID를 전달
+            MatePostDto updatedPost = mateService.updatePost(postId, matePostDto, currentKakaoUserId);
             return ResponseEntity.ok(updatedPost);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
+            // 게시글을 찾을 수 없거나, 권한이 없는 경우 (서비스에서 예외 발생)
+            if (e.getMessage().contains("권한이 없습니다")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // 403 Forbidden
+            }
+            return ResponseEntity.notFound().build(); // 404 Not Found
+        } catch (Exception e) {
+            System.err.println("Error updating post: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     // 게시글 삭제
+    // DELETE /api/boardmatefood/posts/{postId}
     @DeleteMapping("/posts/{postId}")
-    public ResponseEntity<Void> deletePost(@PathVariable Long postId) {
+    public ResponseEntity<Void> deletePost(
+            @PathVariable Long postId,
+            @RequestParam Long currentKakaoUserId // ★★★ 현재 로그인된 사용자 ID를 쿼리 파라미터로 받음 ★★★
+    ) {
         try {
-            mateService.deletePost(postId);
+            // 서비스 계층으로 postId와 요청자 ID를 전달
+            mateService.deletePost(postId, currentKakaoUserId);
             return ResponseEntity.noContent().build();
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
+            // 게시글을 찾을 수 없거나, 권한이 없는 경우 (서비스에서 예외 발생)
+            if (e.getMessage().contains("권한이 없습니다")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // 403 Forbidden
+            }
+            return ResponseEntity.notFound().build(); // 404 Not Found
+        } catch (Exception e) {
+            System.err.println("Error deleting post: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     // 새로운 엔드포인트: 게시글 상태 변경 (PATCH 요청)
-    @PatchMapping("/posts/{postId}/status") // 이 부분이 추가되었습니다.
+    @PatchMapping("/posts/{postId}/status")
     public ResponseEntity<MatePostDto> updatePostStatus(
             @PathVariable Long postId,
-            @RequestBody Map<String, String> payload) {
+            @RequestBody Map<String, String> payload,
+            @RequestParam Long currentKakaoUserId // ★★★ 상태 변경 요청 사용자 ID 추가 (권한 확인용) ★★★
+    ) {
         try {
             String newStatus = payload.get("status");
             if (newStatus == null || newStatus.isEmpty()) {
-                return ResponseEntity.badRequest().build(); // "status" 필드가 누락되었거나 비어있는 경우
+                return ResponseEntity.badRequest().build();
             }
-            MatePostDto updatedPost = mateService.updatePostStatus(postId, newStatus);
+            // 서비스 계층으로 postId, newStatus, 요청자 ID를 전달
+            MatePostDto updatedPost = mateService.updatePostStatus(postId, newStatus, currentKakaoUserId);
             return ResponseEntity.ok(updatedPost);
         } catch (IllegalArgumentException e) {
-            // 게시글을 찾을 수 없거나, 서비스 계층에서 유효성 검사 실패 시
+            if (e.getMessage().contains("권한이 없습니다")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // 403 Forbidden
+            }
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            // 그 외 예기치 않은 오류 발생 시
-            System.err.println("Error updating post status: " + e.getMessage()); // 서버 로그에 자세한 에러 출력
+            System.err.println("Error updating post status: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
