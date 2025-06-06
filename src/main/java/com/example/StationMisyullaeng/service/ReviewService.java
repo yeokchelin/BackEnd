@@ -66,7 +66,11 @@ public class ReviewService {
         return ReviewResponseDto.toDto(review);
     }
 
-    public List<Review> findReviewsByUserId(Long userId) {
-        return reviewRepository.findByUserId(userId);
+    @Transactional(readOnly = true)
+    public List<ReviewResponseDto> findReviewDtosByUserId(Long userId) {
+        List<Review> reviews = reviewRepository.findByUserId(userId);
+        return reviews.stream()
+                .map(ReviewResponseDto::toDto)
+                .collect(Collectors.toList());
     }
 }

@@ -67,8 +67,8 @@ public class FreeBoardController { // ❗️ 클래스 이름 변경
 
     // 내가 쓴 게시물 가져오기
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<FreePostWrite>> getPostsByUser(@PathVariable Long userId) {
-        List<FreePostWrite> posts = freeBoardPostService.findPostsByUserId(userId);
+    public ResponseEntity<List<FreePostDto>> getFreePostsByUser(@PathVariable Long userId) {
+        List<FreePostDto> posts = freeBoardPostService.findPostsByUserId(userId);
         return ResponseEntity.ok(posts);
     }
 }

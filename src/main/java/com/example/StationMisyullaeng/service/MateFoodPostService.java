@@ -116,8 +116,10 @@ public class MateFoodPostService {
         return MatePostDto.fromEntity(updatedPost);
     }
 
-    public List<MateFoodPost> findPostsByUserId(Long userId) {
-        return mateFoodPostRepository.findByUserId(userId);
-        // 만약 연관관계면 findByUser_Id(userId)
+    public List<MatePostDto> findPostsByUserId(Long userId) {
+        return mateFoodPostRepository.findByUserId(userId)
+                .stream()
+                .map(MatePostDto::fromEntity)
+                .collect(Collectors.toList());
     }
 }

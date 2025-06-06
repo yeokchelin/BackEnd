@@ -93,8 +93,10 @@ public class FreeBoardPostService {
         }
     }
 
-    public List<FreePostWrite> findPostsByUserId(Long userId) {
-        return freePostWriteRepository.findByUserId(userId);
-        // 연관관계면 findByUser_Id(userId)
+    public List<FreePostDto> findPostsByUserId(Long userId) {
+        return freePostWriteRepository.findByUserId(userId)
+                .stream()
+                .map(FreePostDto::fromEntity)
+                .collect(Collectors.toList());
     }
 }

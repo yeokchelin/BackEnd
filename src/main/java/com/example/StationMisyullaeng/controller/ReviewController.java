@@ -44,8 +44,8 @@ public class ReviewController {
 
     // 내가 쓴 게시물 가져오기
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Review>> getReviewsByUser(@PathVariable Long userId) {
-        List<Review> reviews = reviewService.findReviewsByUserId(userId);
+    public ResponseEntity<List<ReviewResponseDto>> getReviewsByUser(@PathVariable Long userId) {
+        List<ReviewResponseDto> reviews = reviewService.findReviewDtosByUserId(userId);
         return ResponseEntity.ok(reviews);
     }
 }
