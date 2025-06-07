@@ -1,5 +1,7 @@
 package com.example.StationMisyullaeng.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,6 +12,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Restaurant {
 
     @Id
@@ -30,6 +33,7 @@ public class Restaurant {
     // 여기서는 일반적인 1:N 관계(Store:Restaurant)를 가정하여 ManyToOne으로 설정합니다.
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id", nullable = false) // 'restaurant' 테이블에 'store_id' 컬럼으로 매핑
+    @JsonIgnore
     private Store store; // ❗️ Store 엔티티의 실제 패키지 경로를 임포트하세요.
 
 }
