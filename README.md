@@ -52,13 +52,21 @@
 
 backend/
 ┣ config/ # JWT, CORS, WebSecurity 설정
+
 ┣ controller/ # REST API 진입점 (요청 처리)
+
 ┣ dto/ # 클라이언트 ↔ 서버 간 데이터 전달 객체
+
 ┣ entity/ # JPA 엔티티 클래스
+
 ┣ exception/ # 전역 예외 처리
+
 ┣ repository/ # 데이터베이스 접근 (JPA Repository)
+
 ┣ service/ # 비즈니스 로직 처리
+
 ┣ security/ # 인증 관련 필터 및 유틸리티
+
 ┗ BackendApplication.java # 메인 실행 파일
 
 ---
