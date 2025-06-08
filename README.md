@@ -51,6 +51,7 @@
 ## 📂 백엔드 폴더 구조 (Backend Directory Structure)
 
 backend/
+
 ┣ config/ # JWT, CORS, WebSecurity 설정
 
 ┣ controller/ # REST API 진입점 (요청 처리)
