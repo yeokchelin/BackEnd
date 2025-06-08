@@ -1,0 +1,41 @@
+@startuml
+
+class CommentService
+class FavoriteService
+class FreeBoardPostService
+class KakaoAuthService
+class KakaoUserService
+class MateFoodPostService
+class RestaurantService
+class ReviewService
+class StoreService
+class TodayMenuService
+
+KakaoUserService <-- KakaoAuthService
+
+StoreService --> KakaoUserService
+
+RestaurantService <-- StoreService
+
+ReviewService --> KakaoUserService
+ReviewService --> RestaurantService
+ReviewService --> CommentService
+ReviewService <-- StoreService
+
+CommentService --> KakaoUserService
+CommentService --> ReviewService
+CommentService --> MateFoodPostService
+
+FreeBoardPostService --> KakaoUserService
+FreeBoardPostService --> CommentService
+
+MateFoodPostService --> KakaoUserService
+MateFoodPostService --> CommentService
+
+FavoriteService --> KakaoUserService
+FavoriteService --> RestaurantService
+FavoriteService <-- StoreService
+
+TodayMenuService --> RestaurantService
+
+@enduml

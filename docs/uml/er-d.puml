@@ -1,0 +1,168 @@
+@startuml
+title "ER-Diregram"
+
+' 클래스 선언
+' Comment Entity
+class Comment {
+    - id: Long
+    - content: String
+    - targetId: Long
+    - targetType: String
+    - kakaoUser: KakaoUser
+    - createdAt: LocalDateTime
+}
+
+' Favorite Entity
+class Favorite {
+    - id: Long
+    - user: KakaoUser
+    - restaurant: Restaurant
+}
+
+' FreePostWrite Entity
+class FreePostWrite {
+    - id: Long
+    - user: KakaoUser
+    - writer: String
+    - title: String
+    - content: String
+    - createdAt: LocalDateTime
+}
+
+' KakaoUser Entity
+class KakaoUser {
+    - id: Long
+    - kakaoId: String
+    - email: String
+    - nickname: String
+    - profileImage: String
+    - grade: UserGrade
+    - mateFoodPosts: MateFoodPosts
+    - posts: FreePostWrite
+    - reviews: Review
+}
+
+' MateFoodPost Entity
+class MateFoodPost {
+    - id: Long
+    - user: KakaoUser
+    - writer: String
+    - title: String
+    - content: String
+    - meetingStation: String
+    - meetingTime: String
+    - recruitCount: Integer
+    - preferredGender: String
+    - status: String
+    - createdAt: LocalDateTime
+    - updatedAt: LocalDateTime
+
+    + update(title, content, meetingStation, meetingTime, recruitCount, preferredGender, status)
+}
+
+' Restaurant Entity
+class Restaurant {
+    id: Long
+    name: String
+    stationName: String
+    category: String
+    rating: Double
+    reviewCount: Integer
+    imageUrl: String
+    description: String
+    store: Store
+}
+
+' Review Entity
+class Review {
+    - reviewId: Long
+    - user: KakaoUser
+    - restaurant: Restaurant
+    - author: String
+    - title: String
+    - content: String
+    - rate: Integer
+    - imagePath: String
+    - createdAt: LocalDateTime
+    - ownerReplyContent: String
+    - ownerRepliedAt: LocalDateTime
+    + updateOwnerReply(replyContent)
+    + clearOwnerReply()
+}
+
+' Store Entity
+class Store {
+    - storeId: Long
+    - name: String
+    - address: String
+    - hours: String
+    - phone: String
+    - description: String
+    - kakaoId: String
+    - contact: String
+    - registrationNumber: String
+    - category: String
+    - imageUrl: String
+    - meetingStation: String
+    + updateInfo(name, address, hours, contact, description, registrationNumber, category, imageUrl, meetingStation)
+}
+
+' StoreImage Entity
+class StoreImage {
+    - imageId: Long
+    - imageUrl: String
+    - type: String
+    - store: Store
+}
+
+' TodayMenu Entity
+class TodayMenu {
+    - id: Long
+    - name: String
+    - description: String
+    - imageUrl: String
+    - category: String
+}
+
+' UserGrade Enum
+enum UserGrade {
+    GENERAL
+    OWNER
+    ADMIN
+    --
+    - label: String
+    --
+    + getLabel(): String
+}
+
+' 이제 연결하기
+' 1. KakaoUser와 관련된 관계
+KakaoUser "1" --> "0..*" Comment : 댓글 작성
+KakaoUser "1" --> "0..*" Favorite : 즐겨찾기 추가
+KakaoUser "1" --> "0..*" FreePostWrite : 게시글 작성
+KakaoUser "1" --> "0..*" MateFoodPost : 게시글 작성
+KakaoUser "1" --> "0..*" Review : 리뷰 작성
+KakaoUser "1" --> "1" UserGrade : 유저 등급 지정 (단방향 연관)
+
+' 2. Favorite과 관련된 관계
+Favorite "0..*" -- "1" Restaurant : 즐겨찾기한 음식점
+
+' 3. Restaurant과 관련된 관계
+Restaurant "1" -- "1" Store : 소유 (Restaurant이 특정 Store에 속함)
+Restaurant "1" --> "0..*" Review : 대상
+
+' 4. Store와 관련된 관계
+Store "1" --> "0..*" StoreImage : 이미지 포함
+
+' 5. Comment와 관련된 관계 (targetId/targetType은 일반적인 참조로 표현)
+' Comment가 FreePostWrite나 MateFoodPost, Review 등 다양한 엔티티에 달릴 수 있으므로
+' 명확한 ERD 관계보다는 일반적인 참조 필드로 표현하는 것이 좋습니다.
+' 만약 특정 엔티티에만 달린다면 해당 엔티티와 Comment를 연결할 수 있습니다.
+' 예: FreePostWrite "1" --> "0..*" Comment : 댓글
+
+' 6. TodayMenu와 관련된 관계 (현재 독립적으로 보임, 특정 Store에 속하는지 등 관계 필요)
+' 만약 TodayMenu가 Store에 속한다면:
+' Store "1" --> "0..*" TodayMenu : 오늘의 메뉴
+
+
+@enduml
