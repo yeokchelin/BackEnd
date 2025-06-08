@@ -137,22 +137,22 @@ enum UserGrade {
 
 ' 이제 연결하기
 ' 1. KakaoUser와 관련된 관계
-KakaoUser "1" --> "0..*" Comment : 댓글 작성
-KakaoUser "1" --> "0..*" Favorite : 즐겨찾기 추가
-KakaoUser "1" --> "0..*" FreePostWrite : 게시글 작성
-KakaoUser "1" --> "0..*" MateFoodPost : 게시글 작성
-KakaoUser "1" --> "0..*" Review : 리뷰 작성
+KakaoUser "1" --> "N" Comment : 댓글 작성
+KakaoUser "1" --> "N" Favorite : 즐겨찾기 추가
+KakaoUser "1" --> "N" FreePostWrite : 게시글 작성
+KakaoUser "1" --> "N" MateFoodPost : 게시글 작성
+KakaoUser "1" --> "N" Review : 리뷰 작성
 KakaoUser "1" --> "1" UserGrade : 유저 등급 지정 (단방향 연관)
 
 ' 2. Favorite과 관련된 관계
-Favorite "0..*" -- "1" Restaurant : 즐겨찾기한 음식점
+Favorite "N" -- "1" Restaurant : 즐겨찾기한 음식점
 
-' 3. Restaurant과 관련된 관계
+' 3. Restaurant과 관련된 관계ssss
 Restaurant "1" -- "1" Store : 소유 (Restaurant이 특정 Store에 속함)
-Restaurant "1" --> "0..*" Review : 대상
+Restaurant "1" --> "N" Review : 대상
 
 ' 4. Store와 관련된 관계
-Store "1" --> "0..*" StoreImage : 이미지 포함
+Store "1" --> "N" StoreImage : 이미지 포함
 
 
 @enduml
